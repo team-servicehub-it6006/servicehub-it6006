@@ -34,7 +34,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'accounts',
+    'services',
+    'bookings',
+    'core',
 ]
+
+# Email is the login field and the three roles are auth Groups, so the whole of Django's
+# permission machinery keeps working. See accounts/models.py.
+AUTH_USER_MODEL = 'accounts.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
