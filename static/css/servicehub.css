@@ -1,0 +1,30 @@
+/* Small stylesheet on top of Bootstrap. Only the things Bootstrap does not already give us. */
+:root {
+  --brand: #0f5132;
+  --brand-dark: #0b3d26;
+}
+
+.bg-brand { background-color: var(--brand); }
+
+.btn-brand {
+  background-color: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+.btn-brand:hover,
+.btn-brand:focus {
+  background-color: var(--brand-dark);
+  border-color: var(--brand-dark);
+  color: #fff;
+}
+
+body { font-size: 1rem; line-height: 1.5; }
+
+/* Status is never conveyed by colour alone: every badge carries its word as well. This just
+   keeps the words readable at the small size. */
+.badge { font-weight: 600; letter-spacing: .2px; }
+
+/* The cleaner view is used on a phone in a driveway, so the tap targets are bigger there. */
+@media (max-width: 576px) {
+  .table td .btn { padding: .5rem .9rem; }
+}
