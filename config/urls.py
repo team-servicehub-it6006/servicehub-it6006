@@ -6,9 +6,12 @@ than by what they act on, so an entry sitting in the wrong group is visible here
 the view. See docs/url-design.md.
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 urlpatterns = [
     # Moved off the default /admin/ so the path everyone probes returns a 404.
     path('servicehub-admin/', admin.site.urls),
+
+    path('services/', include('services.urls')),
+    path('', include('core.urls')),
 ]
