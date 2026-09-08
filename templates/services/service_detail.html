@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}{{ service.name }} &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <h1 class="h3">{{ service.name }}</h1>
+    <p class="text-muted">{{ service.description }}</p>
+    <p class="small">Usually about {{ service.duration_display }} for a three bedroom house.</p>
+    <h2 class="h5 mt-4">What is included</h2>
+    <ul>{% for item in service.inclusion_list %}<li>{{ item }}</li>{% endfor %}</ul>
+  </div>
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <p class="text-muted mb-1 small">Base price</p>
+        <p class="h3">${{ service.base_price }}</p>
+        <p class="small text-muted">The final price is confirmed once you pick the property
+           size on the next screen.</p>
+        <a class="btn btn-brand w-100" href="{% url 'services:list' %}">All services</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
