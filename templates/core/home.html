@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="p-4 p-md-5 mb-4 rounded bg-light">
+  <h1 class="display-6 fw-bold">Book a trusted home cleaner in under two minutes</h1>
+  <p class="lead mb-3">Pick a service, choose a date, and we assign one of our cleaners.
+     No phone calls, no waiting on a quote.</p>
+  <a class="btn btn-brand" href="{% url 'services:list' %}">Browse services</a>
+</div>
+
+<div class="row g-4">
+  {% for service in services %}
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+          <h2 class="h5 card-title">{{ service.name }}</h2>
+          <p class="card-text text-muted small flex-grow-1">{{ service.description }}</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="badge rounded-pill text-bg-light border">from ${{ service.base_price }}</span>
+            <a class="btn btn-sm btn-brand" href="{{ service.get_absolute_url }}">View</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">No services are listed at the moment.</p>
+  {% endfor %}
+</div>
+{% endblock %}
