@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}403 &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="row justify-content-center text-center py-5"><div class="col-lg-6">
+  <p class="display-1 fw-bold text-muted mb-0">403</p>
+  <h1 class="h4 mb-3">You do not have access to that</h1>
+  <p class="text-muted">You are signed in, but this page is not one your account is allowed to open. If you think that is wrong, ask the office to check your role.</p>
+  <a class="btn btn-brand" href="{% url 'core:home' %}">Back to the home page</a>
+</div></div>
+{% endblock %}
