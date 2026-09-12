@@ -1,0 +1,15 @@
+{% extends '_form_page.html' %}
+{% block title %}Sign up &middot; ServiceHub{% endblock %}
+{% block heading %}Create your account{% endblock %}
+{% block lede %}Your account is created as a customer. Staff accounts are set up by the office.{% endblock %}
+{% block submit %}Create account{% endblock %}
+
+{% block after_form %}
+<p class="small text-muted mt-3">
+  Passwords need at least 12 characters, cannot be all numbers, cannot be a common password,
+  and cannot look like your own name or email.
+</p>
+<p class="small">Already registered? <a href="{% url 'accounts:login' %}">Sign in</a>.</p>
+<p class="small text-muted">We explain what we do with your details on our
+  <a href="{% url 'core:privacy' %}">privacy page</a>.</p>
+{% endblock %}
