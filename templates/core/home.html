@@ -5,6 +5,9 @@
   <p class="lead mb-3">Pick a service, choose a date, and we assign one of our cleaners.
      No phone calls, no waiting on a quote.</p>
   <a class="btn btn-brand" href="{% url 'services:list' %}">Browse services</a>
+  {% if not user.is_authenticated %}
+    <a class="btn btn-outline-dark" href="{% url 'accounts:signup' %}">Create an account</a>
+  {% endif %}
 </div>
 
 <div class="row g-4">
