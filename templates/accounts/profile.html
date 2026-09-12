@@ -1,0 +1,9 @@
+{% extends '_form_page.html' %}
+{% block title %}My details &middot; ServiceHub{% endblock %}
+{% block heading %}My details{% endblock %}
+{% block lede %}Correct anything that is wrong. Your email address is your sign-in name, so it cannot be changed here.{% endblock %}
+{% block submit %}Save changes{% endblock %}
+
+{% block after_form %}
+<p class="small mt-3"><a href="{% url 'accounts:password_change' %}">Change my password</a></p>
+{% endblock %}
