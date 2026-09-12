@@ -12,6 +12,7 @@ urlpatterns = [
     # Moved off the default /admin/ so the path everyone probes returns a 404.
     path('servicehub-admin/', admin.site.urls),
 
+    path('accounts/', include('accounts.urls')),
     path('services/', include('services.urls')),
     path('', include('core.urls')),
 ]
