@@ -16,7 +16,8 @@
         <p class="h3">${{ service.base_price }}</p>
         <p class="small text-muted">The final price is confirmed once you pick the property
            size on the next screen.</p>
-        <a class="btn btn-brand w-100" href="{% url 'services:list' %}">All services</a>
+        <a class="btn btn-brand w-100" href="{% url 'bookings:create' service.slug %}">Book this service</a>
+        <a class="btn btn-outline-secondary w-100 mt-2" href="{% url 'services:list' %}">All services</a>
       </div>
     </div>
   </div>
