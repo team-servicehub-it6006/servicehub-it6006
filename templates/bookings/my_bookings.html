@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}My bookings &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">My bookings</h1>
+  <a class="btn btn-brand" href="{% url 'services:list' %}">New booking</a>
+</div>
+{% if bookings %}
+<div class="table-responsive">
+  <table class="table align-middle">
+    <thead><tr>
+      <th>Reference</th><th>Service</th><th>Date</th><th>Cleaner</th><th>Status</th><th></th>
+    </tr></thead>
+    <tbody>
+    {% for booking in bookings %}
+      <tr>
+        <td class="font-monospace">{{ booking.reference }}</td>
+        <td>{{ booking.service.name }}</td>
+        <td>{{ booking.scheduled_date|date:'j M Y' }}, {{ booking.scheduled_time|time:'g:ia' }}</td>
+        <td>{% if booking.cleaner %}{{ booking.cleaner.short_name }}{% else %}
+            <span class="text-muted">Not assigned yet</span>{% endif %}</td>
+        <td><span class="badge text-bg-{{ booking.badge }}">{{ booking.get_status_display }}</span></td>
+        <td><a href="{{ booking.get_absolute_url }}">View</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  <p class="text-muted">You have not booked anything yet.</p>
+{% endif %}
+{% endblock %}
