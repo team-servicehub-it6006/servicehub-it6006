@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Book {{ service.name }} &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <h1 class="h3">{% if booking %}Edit booking {{ booking.reference }}{% else %}Book: {{ service.name|lower }}{% endif %}</h1>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include '_form_fields.html' with form=form %}
+      <button class="btn btn-brand" type="submit">
+        {% if booking %}Save changes{% else %}Confirm booking{% endif %}</button>
+      <a class="btn btn-outline-secondary" href="{% if booking %}{{ booking.get_absolute_url }}{% else %}{{ service.get_absolute_url }}{% endif %}">Cancel</a>
+    </form>
+  </div>
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="h5">Summary</h2>
+        <div class="d-flex justify-content-between"><span>{{ service.name }}</span>
+          <span>${{ service.base_price }}</span></div>
+        <p class="small text-muted mt-2">
+          Extra bedrooms are $25 each and extra bathrooms are $30 each, on top of a two bedroom,
+          one bathroom property. The final total is worked out on the server when you submit,
+          so nothing here can be edited in the browser to change what you pay.</p>
+        <p class="small text-muted mb-0">Your booking starts as Pending. The office confirms it
+          once a cleaner is assigned.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
