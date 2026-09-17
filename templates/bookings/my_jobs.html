@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}My jobs &middot; ServiceHub{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Jobs assigned to me</h1>
+{% if jobs %}
+<div class="table-responsive">
+  <table class="table align-middle">
+    <thead><tr>
+      <th>Reference</th><th>Service</th><th>When</th><th>Address</th><th>Status</th><th>Update</th>
+    </tr></thead>
+    <tbody>
+    {% for job in jobs %}
+      <tr>
+        <td class="font-monospace"><a href="{{ job.get_absolute_url }}">{{ job.reference }}</a></td>
+        <td>{{ job.service.name }}</td>
+        <td>{{ job.scheduled_date|date:'D j M' }}, {{ job.scheduled_time|time:'g:ia' }}</td>
+        <td class="small">{{ job.address }}</td>
+        <td><span class="badge text-bg-{{ job.badge }}">{{ job.get_status_display }}</span></td>
+        <td>
+          {% if job.status == 'confirmed' %}
+            <form method="post" action="{% url 'staff:job_status' job.pk %}">
+              {% csrf_token %}
+              <input type="hidden" name="status" value="in_progress">
+              <button class="btn btn-sm btn-brand" type="submit">Start job</button>
+            </form>
+          {% elif job.status == 'in_progress' %}
+            <form method="post" action="{% url 'staff:job_status' job.pk %}">
+              {% csrf_token %}
+              <input type="hidden" name="status" value="completed">
+              <button class="btn btn-sm btn-success" type="submit">Mark complete</button>
+            </form>
+          {% else %}
+            <span class="text-muted small">Nothing to do</span>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  <p class="text-muted">Nothing is assigned to you at the moment.</p>
+{% endif %}
+{% endblock %}
