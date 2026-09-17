@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}{{ booking.reference }} &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h1 class="h3 mb-0">Booking {{ booking.reference }}</h1>
+      <span class="badge text-bg-{{ booking.badge }}">{{ booking.get_status_display }}</span>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6"><div class="card h-100"><div class="card-body">
+        <p class="small text-muted mb-1">Service</p><p class="mb-3">{{ booking.service.name }}</p>
+        <p class="small text-muted mb-1">Date and time</p>
+        <p class="mb-0">{{ booking.scheduled_date|date:'j F Y' }}, {{ booking.scheduled_time|time:'g:ia' }}</p>
+      </div></div></div>
+      <div class="col-md-6"><div class="card h-100"><div class="card-body">
+        <p class="small text-muted mb-1">Address</p><p class="mb-3">{{ booking.address }}</p>
+        <p class="small text-muted mb-1">Assigned cleaner</p>
+        <p class="mb-0">{% if booking.cleaner %}{{ booking.cleaner.get_full_name }}{% else %}
+           <span class="text-muted">Not assigned yet</span>{% endif %}</p>
+      </div></div></div>
+    </div>
+
+    {% if booking.access_notes and is_owner or booking.access_notes and is_assigned_cleaner or booking.access_notes and can_manage %}
+      <h2 class="h5 mt-4">Access notes</h2>
+      <p class="text-muted">{{ booking.access_notes }}</p>
+    {% endif %}
+
+    <h2 class="h5 mt-4">Status history</h2>
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead><tr><th>When</th><th>Status</th><th>Changed by</th><th>Note</th></tr></thead>
+        <tbody>
+        {% for row in history %}
+          <tr>
+            <td>{{ row.changed_at|date:'j M Y, g:ia' }}</td>
+            <td>{{ row.get_to_status_display }}</td>
+            <td>{% if row.changed_by %}{{ row.changed_by.short_name }}{% else %}system{% endif %}</td>
+            <td class="text-muted small">{{ row.note }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card"><div class="card-body">
+      <h2 class="h5">Actions</h2>
+      <p class="mb-1"><strong>Total: ${{ booking.total_price }}</strong></p>
+      <p class="small text-muted">{{ booking.bedrooms }} bedroom{{ booking.bedrooms|pluralize }},
+         {{ booking.bathrooms }} bathroom{{ booking.bathrooms|pluralize }}</p>
+
+      {% if is_owner and booking.is_editable %}
+        <a class="btn btn-brand w-100 mb-2" href="{% url 'bookings:edit' booking.pk %}">Edit booking</a>
+        <a class="btn btn-outline-danger w-100 mb-2" href="{% url 'bookings:cancel' booking.pk %}">Cancel booking</a>
+      {% endif %}
+
+      {% if is_assigned_cleaner %}
+        {% if booking.status == 'confirmed' %}
+          <form method="post" action="{% url 'staff:job_status' booking.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="in_progress">
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button class="btn btn-brand w-100 mb-2" type="submit">Start this job</button>
+          </form>
+        {% elif booking.status == 'in_progress' %}
+          <form method="post" action="{% url 'staff:job_status' booking.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="completed">
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button class="btn btn-success w-100 mb-2" type="submit">Mark complete</button>
+          </form>
+        {% endif %}
+      {% endif %}
+
+      {% if can_manage %}
+        <a class="btn btn-outline-dark w-100 mb-2" href="{% url 'manage:assign' booking.pk %}">
+          {% if booking.cleaner %}Reassign cleaner{% else %}Assign a cleaner{% endif %}</a>
+        <p class="small text-muted mb-0">Customer: {{ booking.customer.get_full_name }},
+           {{ booking.customer.phone }}</p>
+      {% endif %}
+    </div></div>
+  </div>
+</div>
+{% endblock %}
