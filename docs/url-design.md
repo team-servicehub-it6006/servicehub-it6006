@@ -36,8 +36,8 @@ is easiest to see and easiest to get wrong.
 /bookings/                        customer, own records
 /bookings/new/<slug>/             customer
 /bookings/<uuid>/                 owner, assigned cleaner, or admin
-/bookings/<uuid>/edit/            owner, while pending or confirmed
-/bookings/<uuid>/cancel/          owner, while pending or confirmed
+/bookings/<uuid>/edit/            owner or administrator, while pending or confirmed
+/bookings/<uuid>/cancel/          owner or administrator, while pending or confirmed
 
 /staff/jobs/                      cleaner, own jobs
 /staff/jobs/<uuid>/status/        assigned cleaner, POST only
