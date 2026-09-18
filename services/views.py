@@ -29,6 +29,15 @@ class ServiceForm(forms.ModelForm):
                 field.widget.attrs.setdefault('class', 'form-control')
 
 
+    def clean_duration_minutes(self):
+        duration = self.cleaned_data['duration_minutes']
+        if self.instance.pk and duration != self.instance.duration_minutes:
+            if self.instance.bookings.exclude(status__in=['completed', 'cancelled']).exists():
+                raise forms.ValidationError(
+                    'Finish or cancel existing bookings before changing this service duration.')
+        return duration
+
+
 class ServiceListView(ListView):
     """Public catalogue. Inactive services are filtered out in the queryset, not the template."""
 

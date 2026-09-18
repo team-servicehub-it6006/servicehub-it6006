@@ -37,7 +37,13 @@ class Service(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)[:110]
+            base = slugify(self.name)[:100] or 'service'
+            candidate = base
+            suffix = 2
+            while Service.objects.exclude(pk=self.pk).filter(slug=candidate).exists():
+                candidate = f'{base}-{suffix}'
+                suffix += 1
+            self.slug = candidate
         return super().save(*args, **kwargs)
 
     def __str__(self):
