@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}404 &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="row justify-content-center text-center py-5"><div class="col-lg-6">
+  <p class="display-1 fw-bold text-muted mb-0">404</p>
+  <h1 class="h4 mb-3">That page is not here</h1>
+  <p class="text-muted">The address may be wrong, or the record may have been removed. A booking
+     you are not allowed to open looks the same as one that does not exist, on purpose.</p>
+  <a class="btn btn-brand" href="{% url 'core:home' %}">Back to the home page</a>
+</div></div>
+{% endblock %}
