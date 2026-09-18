@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Audit log &middot; ServiceHub{% if is_paginated %}<nav aria-label="Page navigation" class="d-flex gap-3 align-items-center mt-3">
+{% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&amp;q={{ request.GET.q|urlencode }}&amp;status={{ request.GET.status|urlencode }}&amp;role={{ request.GET.role|urlencode }}&amp;action={{ request.GET.action|urlencode }}">Previous</a>{% endif %}
+<span>Page {{ page_obj.number }} of {{ paginator.num_pages }}</span>
+{% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&amp;q={{ request.GET.q|urlencode }}&amp;status={{ request.GET.status|urlencode }}&amp;role={{ request.GET.role|urlencode }}&amp;action={{ request.GET.action|urlencode }}">Next</a>{% endif %}
+</nav>{% endif %}
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Audit log</h1>
+  <span class="small text-muted">{{ pending_count }} booking{{ pending_count|pluralize }} waiting for a cleaner</span>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-auto">
+    <label class="visually-hidden" for="action">Action</label>
+    <select class="form-select" id="action" name="action">
+      <option value="">Every action</option>
+      {% for name in actions %}
+        <option value="{{ name }}" {% if name == action %}selected{% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto"><button class="btn btn-outline-dark" type="submit">Filter</button></div>
+  {% if action %}
+    <div class="col-auto"><a class="btn btn-link" href="{% url 'manage:audit' %}">Clear</a></div>
+  {% endif %}
+</form>
+
+<div class="table-responsive">
+  <table class="table align-middle">
+    <thead><tr><th>When</th><th>Who</th><th>Action</th><th>Record</th></tr></thead>
+    <tbody>
+    {% for entry in entries %}
+      <tr>
+        <td class="small">{{ entry.created_at|date:'j M Y, g:ia' }}</td>
+        <td class="small">{% if entry.actor %}{{ entry.actor.get_full_name }}{% else %}system{% endif %}</td>
+        <td><span class="badge text-bg-light border">{{ entry.action }}</span></td>
+        <td class="small">{{ entry.object_type }} {{ entry.object_ref }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="4" class="text-muted">Nothing has been logged yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if is_paginated %}
+  <nav aria-label="Audit log pages">
+    <ul class="pagination">
+      {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?{% if action %}action={{ action }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Previous</a></li>
+      {% endif %}
+      <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+      {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?{% if action %}action={{ action }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Next</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endif %}
+
+<p class="small text-muted">There is no route anywhere in the project that edits or deletes a row
+   in this table. That is what makes it worth keeping.</p>
+{% if is_paginated %}<nav aria-label="Page navigation" class="d-flex gap-3 align-items-center mt-3">
+{% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&amp;q={{ request.GET.q|urlencode }}&amp;status={{ request.GET.status|urlencode }}&amp;role={{ request.GET.role|urlencode }}&amp;action={{ request.GET.action|urlencode }}">Previous</a>{% endif %}
+<span>Page {{ page_obj.number }} of {{ paginator.num_pages }}</span>
+{% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&amp;q={{ request.GET.q|urlencode }}&amp;status={{ request.GET.status|urlencode }}&amp;role={{ request.GET.role|urlencode }}&amp;action={{ request.GET.action|urlencode }}">Next</a>{% endif %}
+</nav>{% endif %}
+{% endblock %}

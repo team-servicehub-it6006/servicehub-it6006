@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Add a staff user &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-6">
+  <h1 class="h3 mb-1">Add a staff user</h1>
+  <p class="text-muted">For cleaners and office staff. Customers make their own accounts through
+     the sign up page.</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% include '_form_fields.html' with form=form %}
+    <button class="btn btn-brand" type="submit">Create the account</button>
+    <a class="btn btn-outline-secondary" href="{% url 'manage:users' %}">Cancel</a>
+  </form>
+  <p class="small text-muted mt-3">The new account is written to the audit log with your name.
+     Roles can be changed afterwards from the users list.</p>
+</div></div>
+{% endblock %}

@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
-{% block title %}All bookings &middot; ServiceHub{% endblock %}
+{% block title %}All bookings &middot; ServiceHub{% if is_paginated %}<nav aria-label="Page navigation" class="d-flex gap-3 align-items-center mt-3">
+{% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&amp;q={{ request.GET.q|urlencode }}&amp;status={{ request.GET.status|urlencode }}&amp;role={{ request.GET.role|urlencode }}&amp;action={{ request.GET.action|urlencode }}">Previous</a>{% endif %}
+<span>Page {{ page_obj.number }} of {{ paginator.num_pages }}</span>
+{% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&amp;q={{ request.GET.q|urlencode }}&amp;status={{ request.GET.status|urlencode }}&amp;role={{ request.GET.role|urlencode }}&amp;action={{ request.GET.action|urlencode }}">Next</a>{% endif %}
+</nav>{% endif %}
+{% endblock %}
 {% block content %}
 <h1 class="h3 mb-3">All bookings</h1>
 <form method="get" class="row g-2 mb-3">
@@ -35,7 +40,7 @@
         <td>{% if booking.cleaner %}{{ booking.cleaner.short_name }}{% else %}
             <span class="text-danger small">Unassigned</span>{% endif %}</td>
         <td><span class="badge text-bg-{{ booking.badge }}">{{ booking.get_status_display }}</span></td>
-        <td><a class="btn btn-sm btn-outline-dark" href="{% url 'manage:assign' booking.pk %}">Assign</a></td>
+        <td>{% if booking.is_editable %}<a class="btn btn-sm btn-outline-dark" href="{% url 'manage:assign' booking.pk %}">Assign</a>{% endif %}</td>
       </tr>
     {% empty %}
       <tr><td colspan="7" class="text-muted">Nothing matches that filter.</td></tr>
@@ -43,4 +48,9 @@
     </tbody>
   </table>
 </div>
+{% if is_paginated %}<nav aria-label="Page navigation" class="d-flex gap-3 align-items-center mt-3">
+{% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&amp;q={{ request.GET.q|urlencode }}&amp;status={{ request.GET.status|urlencode }}&amp;role={{ request.GET.role|urlencode }}&amp;action={{ request.GET.action|urlencode }}">Previous</a>{% endif %}
+<span>Page {{ page_obj.number }} of {{ paginator.num_pages }}</span>
+{% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&amp;q={{ request.GET.q|urlencode }}&amp;status={{ request.GET.status|urlencode }}&amp;role={{ request.GET.role|urlencode }}&amp;action={{ request.GET.action|urlencode }}">Next</a>{% endif %}
+</nav>{% endif %}
 {% endblock %}

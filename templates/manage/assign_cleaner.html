@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Assign a cleaner to {{ booking.reference }} &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-7">
+  <h1 class="h3 mb-1">{% if booking.cleaner %}Reassign{% else %}Assign a cleaner to{% endif %} {{ booking.reference }}</h1>
+  <p class="text-muted">{{ booking.service.name }},
+     {{ booking.scheduled_date|date:'j F Y' }} at {{ booking.scheduled_time|time:'g:ia' }}</p>
+
+  <div class="card mb-3"><div class="card-body">
+    <p class="mb-1">{{ booking.address }}</p>
+    <p class="mb-1 small text-muted">Customer: {{ booking.customer.get_full_name }},
+       {{ booking.customer.phone }}</p>
+    <p class="mb-0 small text-muted">Currently
+       {% if booking.cleaner %}{{ booking.cleaner.get_full_name }}{% else %}not assigned{% endif %},
+       status {{ booking.get_status_display|lower }}.</p>
+  </div></div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% include '_form_fields.html' with form=form %}
+    <button class="btn btn-brand" type="submit">Save the assignment</button>
+    <a class="btn btn-outline-secondary" href="{% url 'manage:bookings' %}">Cancel</a>
+  </form>
+
+  <p class="small text-muted mt-3">Choose a cleaner for this job. If the chosen cleaner has an overlapping booking,
+     you will be asked to choose someone else.</p>
+</div></div>
+{% endblock %}
