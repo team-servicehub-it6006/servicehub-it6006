@@ -136,6 +136,14 @@ class BookingUpdateView(LoginRequiredMixin, ObjectAccessMixin, View):
                 'service': booking.service, 'booking': booking, 'form': form})
         updated = form.save(commit=False)
         updated.total_price = booking.service.price_for(updated.bedrooms, updated.bathrooms)
+        if updated.cleaner_id:
+            availability = AssignCleanerForm(
+                {'cleaner': updated.cleaner_id}, booking=updated)
+            if not availability.is_valid():
+                for error in availability.errors.get('cleaner', []):
+                    form.add_error(None, error)
+                return render(request, 'bookings/booking_form.html', {
+                    'service': booking.service, 'booking': booking, 'form': form})
         updated.save()
         updated.history.create(from_status=updated.status, to_status=updated.status,
                                changed_by=request.user, note='Details changed by the customer.')
@@ -207,6 +215,10 @@ class JobStatusUpdateView(LoginRequiredMixin, PermissionRequiredMixin, View):
             for error in form.errors.get('status', ['That status change is not allowed.']):
                 messages.error(request, error)
             return redirect(booking.get_absolute_url())
+
+        if not is_admin and form.cleaned_data['status'] not in {
+                Status.IN_PROGRESS, Status.COMPLETED}:
+            raise PermissionDenied
 
         booking.record_status(form.cleaned_data['status'], request.user,
                               note=form.cleaned_data.get('note', ''))
