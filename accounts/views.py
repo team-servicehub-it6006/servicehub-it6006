@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import LoginView
 from django.core.cache import cache
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, View
@@ -122,7 +123,9 @@ class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
             qs = qs.filter(groups__name=role)
         search = (self.request.GET.get('q') or '').strip()
         if search:
-            qs = qs.filter(email__icontains=search) | qs.filter(last_name__icontains=search)
+            qs = qs.filter(Q(email__icontains=search)
+                           | Q(first_name__icontains=search)
+                           | Q(last_name__icontains=search))
         return qs.distinct()
 
     def get_context_data(self, **kwargs):
