@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Users &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Users</h1>
+  <a class="btn btn-brand" href="{% url 'manage:user_create' %}">Add staff user</a>
+</div>
+<form method="get" class="row g-2 mb-3">
+  <div class="col-auto">
+    <label class="visually-hidden" for="role">Role</label>
+    <select class="form-select" id="role" name="role">
+      <option value="">Every role</option>
+      {% for group in groups %}
+        <option value="{{ group.name }}" {% if group.name == role %}selected{% endif %}>{{ group.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <label class="visually-hidden" for="q">Search</label>
+    <input class="form-control" id="q" name="q" value="{{ q }}" placeholder="Name or email">
+  </div>
+  <div class="col-auto"><button class="btn btn-outline-dark" type="submit">Filter</button></div>
+</form>
+<div class="table-responsive">
+  <table class="table align-middle">
+    <thead><tr><th>Name</th><th>Email</th><th>Roles</th><th>Joined</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for person in users %}
+      <tr>
+        <td>{{ person.get_full_name }}</td>
+        <td class="small">{{ person.email }}</td>
+        <td>{% for group in person.groups.all %}
+              <span class="badge text-bg-light border">{{ group.name }}</span>
+            {% empty %}<span class="text-muted small">None</span>{% endfor %}</td>
+        <td class="small">{{ person.date_joined|date:'j M Y' }}</td>
+        <td>{% if person.is_active %}Active{% else %}<span class="text-muted">Disabled</span>{% endif %}</td>
+        <td><a class="btn btn-sm btn-outline-dark" href="{% url 'manage:user_roles' person.pk %}">Roles</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="small text-muted">Permissions are attached to the role, never to a person, so
+   changing what somebody can do is one change in one place.</p>
+{% endblock %}
