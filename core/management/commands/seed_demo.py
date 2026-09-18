@@ -1,9 +1,10 @@
 from datetime import time, timedelta
 from decimal import Decimal
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 
 from accounts.models import ADMINISTRATOR, CLEANER, CUSTOMER
@@ -69,6 +70,9 @@ class Command(BaseCommand):
     help = 'Create repeatable demo services, users and bookings for ServiceHub.'
 
     def handle(self, *args, **options):
+        if not settings.DEBUG:
+            raise CommandError('seed_demo is disabled when DEBUG is off.')
+
         groups = {}
         for role in (CUSTOMER, CLEANER, ADMINISTRATOR):
             groups[role], _ = Group.objects.get_or_create(name=role)
