@@ -112,7 +112,10 @@ class BookingUpdateView(LoginRequiredMixin, ObjectAccessMixin, View):
 
     def get_booking(self, pk):
         booking = get_object_or_404(Booking.objects.select_related('service'), pk=pk)
-        if booking.customer_id != self.request.user.id:
+        is_owner = booking.customer_id == self.request.user.id
+        can_manage = (self.request.user.has_perm('bookings.view_all_bookings')
+                      and self.request.user.has_perm('bookings.change_booking'))
+        if not (is_owner or can_manage):
             raise PermissionDenied
         if not booking.is_editable:
             raise PermissionDenied
@@ -145,8 +148,9 @@ class BookingUpdateView(LoginRequiredMixin, ObjectAccessMixin, View):
                 return render(request, 'bookings/booking_form.html', {
                     'service': booking.service, 'booking': booking, 'form': form})
         updated.save()
+        actor = 'administrator' if request.user.has_perm('bookings.view_all_bookings') else 'customer'
         updated.history.create(from_status=updated.status, to_status=updated.status,
-                               changed_by=request.user, note='Details changed by the customer.')
+                               changed_by=request.user, note=f'Details changed by the {actor}.')
         messages.success(request, f'Booking {updated.reference} updated.')
         return redirect(updated.get_absolute_url())
 
@@ -159,9 +163,12 @@ class BookingCancelView(LoginRequiredMixin, ObjectAccessMixin, View):
 
     def get_booking(self, pk):
         booking = get_object_or_404(Booking, pk=pk)
-        if booking.customer_id != self.request.user.id:
+        is_owner = booking.customer_id == self.request.user.id
+        can_manage = (self.request.user.has_perm('bookings.view_all_bookings')
+                      and self.request.user.has_perm('bookings.change_booking'))
+        if not (is_owner or can_manage):
             raise PermissionDenied
-        if not booking.can_transition_to(Status.CANCELLED):
+        if not booking.is_editable or not booking.can_transition_to(Status.CANCELLED):
             raise PermissionDenied
         return booking
 
@@ -174,6 +181,8 @@ class BookingCancelView(LoginRequiredMixin, ObjectAccessMixin, View):
         booking.record_status(Status.CANCELLED, request.user,
                               note=request.POST.get('note', '')[:500])
         messages.success(request, f'Booking {booking.reference} has been cancelled.')
+        if request.user.has_perm('bookings.view_all_bookings'):
+            return redirect('manage:bookings')
         return redirect('bookings:mine')
 
 
@@ -248,6 +257,7 @@ class ManageBookingListView(LoginRequiredMixin, PermissionRequiredMixin, ListVie
         search = (self.request.GET.get('q') or '').strip()
         if search:
             qs = qs.filter(Q(reference__icontains=search)
+                           | Q(customer__first_name__icontains=search)
                            | Q(customer__last_name__icontains=search)
                            | Q(customer__email__icontains=search))
         return qs
@@ -264,8 +274,11 @@ class AssignCleanerView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = 'bookings.assign_cleaner'
 
     def get_booking(self, pk):
-        return get_object_or_404(
+        booking = get_object_or_404(
             Booking.objects.select_related('service', 'customer', 'cleaner'), pk=pk)
+        if booking.status in {Status.COMPLETED, Status.CANCELLED}:
+            raise PermissionDenied
+        return booking
 
     def get(self, request, pk):
         booking = self.get_booking(pk)
