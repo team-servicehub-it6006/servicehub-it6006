@@ -60,9 +60,10 @@ cleaner cannot start somebody else's job.
 
 ## Editing a booking
 
-A customer can change the date, time or address only while the booking is pending or confirmed.
-That set is called `EDITABLE_STATUSES` and the `is_editable` property on the model is what the
-templates ask. Once the cleaner is on site, editing the address makes no sense.
+A customer can change the date, time or address only while the booking is pending or confirmed
+and before its scheduled start time. That status set is called `EDITABLE_STATUSES`, and the
+`is_editable` property also checks the scheduled start time. Once the booking has started, editing
+the address makes no sense.
 
 ## Keeping the history
 
