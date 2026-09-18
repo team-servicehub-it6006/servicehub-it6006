@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Cancel {{ booking.reference }} &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-6">
+  <h1 class="h3 mb-1">Cancel booking {{ booking.reference }}</h1>
+  <p class="text-muted">This cannot be undone. A cancelled booking cannot be put back.</p>
+
+  <div class="card mb-3"><div class="card-body">
+    <p class="mb-1"><strong>{{ booking.service.name }}</strong>
+       <span class="badge text-bg-{{ booking.badge }}">{{ booking.get_status_display }}</span></p>
+    <p class="mb-1">{{ booking.scheduled_date|date:'j F Y' }} at {{ booking.scheduled_time|time:'g:ia' }}</p>
+    <p class="mb-1 small text-muted">{{ booking.address }}</p>
+    <p class="mb-0 small text-muted">Total ${{ booking.total_price }}</p>
+  </div></div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label" for="note">Reason, if you want to leave one</label>
+      <textarea class="form-control" id="note" name="note" rows="3" maxlength="500"></textarea>
+      <div class="form-text">Optional. The office sees this on the booking history.</div>
+    </div>
+    <button class="btn btn-danger" type="submit">Yes, cancel this booking</button>
+    <a class="btn btn-outline-secondary" href="{% url 'bookings:detail' booking.pk %}">Keep the booking</a>
+  </form>
+</div></div>
+{% endblock %}

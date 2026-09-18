@@ -51,11 +51,12 @@
       <p class="small text-muted">{{ booking.bedrooms }} bedroom{{ booking.bedrooms|pluralize }},
          {{ booking.bathrooms }} bathroom{{ booking.bathrooms|pluralize }}</p>
 
-      {% if is_owner and booking.is_editable %}
+      {% if booking.is_editable %}{% if is_owner or can_manage %}
         <a class="btn btn-brand w-100 mb-2" href="{% url 'bookings:edit' booking.pk %}">Edit booking</a>
         <a class="btn btn-outline-danger w-100 mb-2" href="{% url 'bookings:cancel' booking.pk %}">Cancel booking</a>
       {% endif %}
 
+      {% endif %}
       {% if is_assigned_cleaner %}
         {% if booking.status == 'confirmed' %}
           <form method="post" action="{% url 'staff:job_status' booking.pk %}">
@@ -75,8 +76,8 @@
       {% endif %}
 
       {% if can_manage %}
-        <a class="btn btn-outline-dark w-100 mb-2" href="{% url 'manage:assign' booking.pk %}">
-          {% if booking.cleaner %}Reassign cleaner{% else %}Assign a cleaner{% endif %}</a>
+        {% if booking.is_editable %}<a class="btn btn-outline-dark w-100 mb-2" href="{% url 'manage:assign' booking.pk %}">
+          {% if booking.cleaner %}Reassign cleaner{% else %}Assign a cleaner{% endif %}</a>{% endif %}
         <p class="small text-muted mb-0">Customer: {{ booking.customer.get_full_name }},
            {{ booking.customer.phone }}</p>
       {% endif %}
