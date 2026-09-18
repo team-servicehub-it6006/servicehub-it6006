@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Roles for {{ target.get_full_name }} &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-6">
+  <h1 class="h3">Roles for {{ target.get_full_name }}</h1>
+  <p class="text-muted">{{ target.email }}</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% include '_form_fields.html' with form=form %}
+    <button class="btn btn-brand" type="submit">Save roles</button>
+    <a class="btn btn-outline-secondary" href="{% url 'manage:users' %}">Cancel</a>
+  </form>
+  <p class="small text-muted mt-3">Every role change is written to the audit log with your name
+     and the time. You cannot remove your own administrator role.</p>
+</div></div>
+{% endblock %}
