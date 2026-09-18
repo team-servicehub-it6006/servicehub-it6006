@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Services &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Services</h1>
+  <a class="btn btn-brand" href="{% url 'manage:service_create' %}">Add service</a>
+</div>
+<div class="table-responsive">
+  <table class="table align-middle">
+    <thead><tr>
+      <th>Name</th><th>Slug</th><th>Base price</th><th>Duration</th><th>Active</th><th>Actions</th>
+    </tr></thead>
+    <tbody>
+    {% for service in services %}
+      <tr>
+        <td>{{ service.name }}</td>
+        <td class="font-monospace small">{{ service.slug }}</td>
+        <td>${{ service.base_price }}</td>
+        <td>{{ service.duration_display }}</td>
+        <td>{% if service.is_active %}Yes{% else %}<span class="text-muted">No</span>{% endif %}</td>
+        <td class="d-flex gap-2">
+          <a class="btn btn-sm btn-outline-dark" href="{% url 'manage:service_edit' service.slug %}">Edit</a>
+          <form method="post" action="{% url 'manage:service_delete' service.slug %}">
+            {% csrf_token %}
+            <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="small text-muted">A service that already has bookings against it is deactivated
+   rather than deleted, so the history of those jobs stays intact.</p>
+{% endblock %}
