@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}{% if object %}Edit service{% else %}New service{% endif %} &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-8">
+  <h1 class="h3">{% if object %}Edit {{ object.name }}{% else %}Add a service{% endif %}</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% include '_form_fields.html' with form=form %}
+    <button class="btn btn-brand" type="submit">Save</button>
+    <a class="btn btn-outline-secondary" href="{% url 'manage:services' %}">Cancel</a>
+  </form>
+</div></div>
+{% endblock %}
