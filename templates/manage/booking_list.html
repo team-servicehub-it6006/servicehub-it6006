@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}All bookings &middot; ServiceHub{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">All bookings</h1>
+<form method="get" class="row g-2 mb-3">
+  <div class="col-auto">
+    <label class="visually-hidden" for="status">Status</label>
+    <select class="form-select" id="status" name="status">
+      <option value="">Every status</option>
+      {% for value, label in statuses %}
+        <option value="{{ value }}" {% if value == status %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <label class="visually-hidden" for="q">Search</label>
+    <input class="form-control" id="q" name="q" value="{{ q }}" placeholder="Reference or customer">
+  </div>
+  <div class="col-auto"><button class="btn btn-outline-dark" type="submit">Filter</button></div>
+</form>
+
+<div class="table-responsive">
+  <table class="table align-middle">
+    <thead><tr>
+      <th>Reference</th><th>Customer</th><th>Service</th><th>Date</th><th>Cleaner</th>
+      <th>Status</th><th></th>
+    </tr></thead>
+    <tbody>
+    {% for booking in bookings %}
+      <tr>
+        <td class="font-monospace"><a href="{{ booking.get_absolute_url }}">{{ booking.reference }}</a></td>
+        <td>{{ booking.customer.get_full_name }}</td>
+        <td>{{ booking.service.name }}</td>
+        <td>{{ booking.scheduled_date|date:'j M' }}, {{ booking.scheduled_time|time:'g:ia' }}</td>
+        <td>{% if booking.cleaner %}{{ booking.cleaner.short_name }}{% else %}
+            <span class="text-danger small">Unassigned</span>{% endif %}</td>
+        <td><span class="badge text-bg-{{ booking.badge }}">{{ booking.get_status_display }}</span></td>
+        <td><a class="btn btn-sm btn-outline-dark" href="{% url 'manage:assign' booking.pk %}">Assign</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="7" class="text-muted">Nothing matches that filter.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
