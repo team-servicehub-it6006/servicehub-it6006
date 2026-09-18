@@ -77,7 +77,7 @@ class Booking(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(6)])
     access_notes = models.TextField(
         blank=True,
-        help_text='Optional. How the cleaner gets in. Cleared 30 days after the job is done.')
+        help_text='Optional. How the cleaner gets in. Cleared by the maintenance command 30 days after completion or cancellation.')
 
     total_price = models.DecimalField(max_digits=8, decimal_places=2)
     status = models.CharField(max_length=12, choices=Status.choices, default=Status.PENDING)

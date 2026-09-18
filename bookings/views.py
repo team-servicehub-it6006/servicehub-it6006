@@ -112,7 +112,9 @@ class BookingUpdateView(LoginRequiredMixin, ObjectAccessMixin, View):
 
     def get_booking(self, pk):
         booking = get_object_or_404(Booking.objects.select_related('service'), pk=pk)
-        if booking.customer_id != self.request.user.id:
+        can_manage = (self.request.user.has_perm('bookings.view_all_bookings')
+                      and self.request.user.has_perm('bookings.change_booking'))
+        if booking.customer_id != self.request.user.id and not can_manage:
             raise PermissionDenied
         if not booking.is_editable:
             raise PermissionDenied
@@ -146,7 +148,9 @@ class BookingUpdateView(LoginRequiredMixin, ObjectAccessMixin, View):
                     'service': booking.service, 'booking': booking, 'form': form})
         updated.save()
         updated.history.create(from_status=updated.status, to_status=updated.status,
-                               changed_by=request.user, note='Details changed by the customer.')
+                               changed_by=request.user, note='Booking details updated.')
+        if request.user.has_perm('bookings.view_all_bookings'):
+            AuditLog.record(request.user, 'booking_updated', 'Booking', updated.reference)
         messages.success(request, f'Booking {updated.reference} updated.')
         return redirect(updated.get_absolute_url())
 
@@ -159,7 +163,9 @@ class BookingCancelView(LoginRequiredMixin, ObjectAccessMixin, View):
 
     def get_booking(self, pk):
         booking = get_object_or_404(Booking, pk=pk)
-        if booking.customer_id != self.request.user.id:
+        can_manage = (self.request.user.has_perm('bookings.view_all_bookings')
+                      and self.request.user.has_perm('bookings.change_booking'))
+        if booking.customer_id != self.request.user.id and not can_manage:
             raise PermissionDenied
         if not booking.can_transition_to(Status.CANCELLED):
             raise PermissionDenied
@@ -173,8 +179,11 @@ class BookingCancelView(LoginRequiredMixin, ObjectAccessMixin, View):
         booking = self.get_booking(pk)
         booking.record_status(Status.CANCELLED, request.user,
                               note=request.POST.get('note', '')[:500])
+        if request.user.has_perm('bookings.view_all_bookings'):
+            AuditLog.record(request.user, 'booking_cancelled', 'Booking', booking.reference)
         messages.success(request, f'Booking {booking.reference} has been cancelled.')
-        return redirect('bookings:mine')
+        return redirect('manage:bookings' if request.user.has_perm(
+            'bookings.view_all_bookings') else 'bookings:mine')
 
 
 class MyJobListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):

@@ -35,7 +35,7 @@ class BookingForm(forms.ModelForm):
             'access_notes': 'Access notes for the cleaner (optional)',
         }
         help_texts = {
-            'access_notes': 'Only if you need to. We delete this 30 days after the job is done.',
+            'access_notes': 'Only if you need to. The maintenance command clears this 30 days after completion or cancellation.',
         }
 
     def __init__(self, *args, service=None, **kwargs):
@@ -112,6 +112,9 @@ class AssignCleanerForm(forms.Form):
         cleaner = self.cleaned_data['cleaner']
         if not self.booking:
             return cleaner
+
+        if not self.booking.is_editable:
+            raise forms.ValidationError('Only pending or confirmed bookings can be assigned.')
 
         start, end = self.booking.starts_at, self.booking.ends_at
         for job in (Booking.objects
