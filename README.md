@@ -25,13 +25,17 @@ Python 3.12 or newer.
 ```
 python -m venv .venv
 .venv\Scripts\activate          # macOS or Linux: source .venv/bin/activate
-pip install -r requirements.txt
-copy .env.example .env          # macOS or Linux: cp .env.example .env
+# Local development uses SQLite, so install the local requirements.
+pip install -r requirements-local.txt
 python manage.py migrate
 python manage.py runserver
 ```
 
 Then open http://127.0.0.1:8000/.
+
+`requirements.txt` is for deployment (PostgreSQL + Gunicorn). The settings module reads
+environment variables from the operating system; `.env.example` is a reference file, not a file
+that Django loads automatically.
 
 ## Planning documents
 
