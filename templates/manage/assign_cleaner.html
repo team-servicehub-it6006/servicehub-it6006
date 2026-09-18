@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Assign cleaner &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-5">
+    <h1 class="h3">Assign cleaner</h1>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="fw-semibold font-monospace">{{ booking.reference }}</div>
+        <div>{{ booking.customer.get_full_name }}</div>
+        <div>{{ booking.service.name }}</div>
+        <div class="text-muted">{{ booking.scheduled_date|date:'j M Y' }}, {{ booking.scheduled_time|time:'g:ia' }}</div>
+        <div class="text-muted">{{ booking.address }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include '_form_fields.html' with form=form %}
+      <button class="btn btn-brand" type="submit">Save assignment</button>
+      <a class="btn btn-outline-secondary" href="{% url 'manage:bookings' %}">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

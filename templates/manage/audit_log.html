@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Audit log &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <div>
+    <h1 class="h3 mb-0">Audit log</h1>
+    <div class="text-muted small">{{ pending_count }} pending booking{{ pending_count|pluralize }}</div>
+  </div>
+  <form method="get" class="d-flex gap-2">
+    <select class="form-select" name="action" aria-label="Filter by action">
+      <option value="">Every action</option>
+      {% for value in actions %}
+        <option value="{{ value }}" {% if value == action %}selected{% endif %}>{{ value }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline-dark" type="submit">Filter</button>
+  </form>
+</div>
+
+<div class="table-responsive">
+<table class="table align-middle">
+  <thead><tr><th>When</th><th>Who</th><th>Action</th><th>Object</th><th>Details</th></tr></thead>
+  <tbody>
+  {% for entry in entries %}
+    <tr>
+      <td class="text-nowrap">{{ entry.created_at|date:'j M Y, H:i' }}</td>
+      <td>{% if entry.actor %}{{ entry.actor.get_full_name|default:entry.actor.email }}{% else %}<span class="text-muted">System</span>{% endif %}</td>
+      <td><span class="badge text-bg-light">{{ entry.action }}</span></td>
+      <td>{{ entry.object_type }}</td>
+      <td class="font-monospace small">{{ entry.object_id }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="5" class="text-muted">No audit entries match that filter.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% if is_paginated %}
+<nav aria-label="Audit log pages">
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if action %}&action={{ action|urlencode }}{% endif %}">Previous</a></li>
+    {% endif %}
+    <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+    {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if action %}&action={{ action|urlencode }}{% endif %}">Next</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

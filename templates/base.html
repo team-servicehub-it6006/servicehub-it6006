@@ -18,15 +18,23 @@
     <div class="collapse navbar-collapse" id="nav">
       <ul class="navbar-nav me-auto">
         <li class="nav-item"><a class="nav-link" href="{% url 'services:list' %}">Services</a></li>
+        {% if is_customer %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'bookings:mine' %}">My bookings</a></li>
+        {% endif %}
+        {% if is_cleaner %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'staff:jobs' %}">My jobs</a></li>
+        {% endif %}
+        {% if is_admin %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'manage:bookings' %}">Manage bookings</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'manage:services' %}">Manage services</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'manage:users' %}">Users</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'manage:audit' %}">Audit log</a></li>
+        {% endif %}
       </ul>
       <ul class="navbar-nav align-items-lg-center">
         {% if user.is_authenticated %}
           <li class="nav-item"><a class="nav-link" href="{% url 'accounts:profile' %}">{{ user.first_name }}</a></li>
           <li class="nav-item">
-            {% comment %}
-              A POST, not a link. A plain anchor can be triggered by an image tag on someone
-              else's page, which would sign the user out without them asking.
-            {% endcomment %}
             <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
               {% csrf_token %}
               <button class="btn btn-sm btn-outline-light ms-lg-2" type="submit">Sign out</button>
