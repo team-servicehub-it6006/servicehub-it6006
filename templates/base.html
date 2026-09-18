@@ -24,7 +24,7 @@
         {% if is_cleaner %}
           <li class="nav-item"><a class="nav-link" href="{% url 'staff:jobs' %}">My jobs</a></li>
         {% endif %}
-        {% if is_admin %}
+        {% if is_administrator %}
           <li class="nav-item"><a class="nav-link" href="{% url 'manage:bookings' %}">Manage bookings</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'manage:services' %}">Manage services</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'manage:users' %}">Users</a></li>
