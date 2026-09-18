@@ -126,7 +126,7 @@ class Booking(models.Model):
 
     @property
     def is_editable(self):
-        return self.status in EDITABLE_STATUSES and self.starts_at > timezone.now()
+        return self.status in EDITABLE_STATUSES and self.starts_at > timezone.now() and self.starts_at > timezone.now()
 
     @property
     def address(self):
