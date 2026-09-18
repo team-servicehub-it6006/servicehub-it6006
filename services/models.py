@@ -37,7 +37,17 @@ class Service(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)[:110]
+            # Different names can slugify to the same value (for example "Deep Clean" and
+            # "Deep-Clean"). Generate a stable unique URL instead of letting that become an
+            # IntegrityError/500 on the administrator form.
+            base = (slugify(self.name) or 'service')[:100]
+            candidate = base
+            suffix = 2
+            while Service.objects.exclude(pk=self.pk).filter(slug=candidate).exists():
+                tail = f'-{suffix}'
+                candidate = f'{base[:110 - len(tail)]}{tail}'
+                suffix += 1
+            self.slug = candidate
         return super().save(*args, **kwargs)
 
     def __str__(self):
