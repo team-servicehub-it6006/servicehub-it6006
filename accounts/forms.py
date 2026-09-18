@@ -41,6 +41,9 @@ class SignUpForm(BootstrapMixin, UserCreationForm):
 class EmailLoginForm(BootstrapMixin, AuthenticationForm):
     username = forms.EmailField(label='Email address')
 
+    def clean_username(self):
+        return self.cleaned_data['username'].strip().lower()
+
     # Same message whichever half is wrong, so the form does not confirm which addresses are
     # registered.
     error_messages = {
