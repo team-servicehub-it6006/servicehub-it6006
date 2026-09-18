@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Cancel {{ booking.reference }} &middot; ServiceHub{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-6">
+  <h1 class="h3">Cancel booking {{ booking.reference }}?</h1>
+  <p class="text-muted">This will cancel your {{ booking.service.name|lower }} on {{ booking.scheduled_date|date:'j M Y' }}.</p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label" for="note">Reason or note (optional)</label>
+      <textarea class="form-control" id="note" name="note" rows="3" maxlength="500"></textarea>
+    </div>
+    <button class="btn btn-danger" type="submit">Cancel booking</button>
+    <a class="btn btn-outline-secondary" href="{{ booking.get_absolute_url }}">Keep booking</a>
+  </form>
+</div></div>
+{% endblock %}
