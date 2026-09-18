@@ -10,7 +10,7 @@ ROLES = (CUSTOMER, CLEANER, ADMINISTRATOR)
 # Accepts the formats people actually type here: 021 123 4567, 0211234567, +64 21 123 4567,
 # 09 555 1234. Deliberately loose about spaces and dashes and strict about everything else.
 nz_phone = RegexValidator(
-    regex=r'^(\+64[\s-]?|0)[2-9](\d[\s-]?){6,9}\d$',
+    regex=r'^(\+64[\s-]?|0)[2-9][\s-]?(\d[\s-]?){6,9}\d$',
     message='Enter a New Zealand phone number, for example 021 123 4567.',
 )
 
