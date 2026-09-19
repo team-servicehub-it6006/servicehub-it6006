@@ -135,6 +135,22 @@ class ManagementUrlTests(BaseFixture):
                 self.assertEqual(self.client.get(reverse(name)).status_code, 200)
 
 
+    def test_assign_action_is_hidden_when_a_booking_is_finished(self):
+        self.client.force_login(self.admin)
+        assign_url = reverse('manage:assign', args=[self.booking.pk])
+
+        for status, shown in [
+                (Status.CONFIRMED, True),
+                (Status.COMPLETED, False),
+                (Status.CANCELLED, False)]:
+            with self.subTest(status=status):
+                self.booking.status = status
+                self.booking.save(update_fields=['status'])
+                response = self.client.get(reverse('manage:bookings'))
+                assertion = self.assertContains if shown else self.assertNotContains
+                assertion(response, assign_url)
+
+
 class StatusTransitionTests(BaseFixture):
     """The status machine is enforced on the server, not by which buttons are drawn."""
 
